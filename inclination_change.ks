@@ -3,6 +3,18 @@ parameter ship_orbit is ship:orbit.
 local eccentricity is ship_orbit:eccentricity.
 local t is ship_orbit:epoch.
 local b is ship_orbit:body.
+local ndv is 0. //Initial node Delta V
+local node is 0.
+local thrt is 0. //for throttle
+local tgtd is SHIP:FACING. //flight target direction
+local eng is 0.
+local done is 0.
+local mf is 0.
+local flow is 0.
+local md is 0.
+local burnt is 0.
+LOCK Throttle to thrt.
+LOCK Steering to tgtd.
 local AN_true_anomaly is 360-obt:argumentofperiapsis.
 local DN_true_anomaly is mod(AN_true_anomaly+180,360).
 local AN_eccentric_anomaly is mod(360+arctan2(sqrt(1-eccentricity^2)*sin(AN_true_anomaly), eccentricity+cos(AN_true_anomaly)),360).
@@ -30,3 +42,33 @@ set dv to v_radial * rs:normalized + v_tangential * vcrs(rs,nt):normalized - vs.
 SET node_prograde to dv * vs:normalized. 
 SET node_radialout to dv * vxcl(vs,rs):normalized. 
 SET node_normal to dv * vcrs(vs,rs):normalized. 
+SET node to NODE(node_timestamp, node_radialout, node_normal, node_prograde).
+ADD node.
+List ENGINES in eng. //engines list
+SET mf to SHIP:MASS/(Constant:e^(NODE:DELTAV:MAG/(eng[0]:ISP*Constant:g0))).
+SET flow to SHIP:MAXTHRUST/(eng[0]:ISP*Constant:g0).
+SET md to SHIP:MASS-mf.
+SET burnt to md/flow.
+Print "Burn time is " + burnt + "seconds".
+Wait Until node:eta <=(burnt/2 + 60).
+Print "60 Seconds to burn".
+SET tgtd to NODE:DELTAV.
+Wait Until vang(tgtd, SHIP:FACING:VECTOR) < 0.25. 
+Print "aligned to node".
+Wait Until NODE:ETA <= (burnt/2).
+Print "Burning".
+SET ndv to NODE:DELTAV.
+Until done {
+	SET thrt to min(NODE:DELTAV:MAG/(SHIP:MAXTHRUST/SHIP:MASS), 1).
+	SET tgtd to NODE:DELTAV.
+	If NODE:DELTAV:MAG < 0.1 {
+		Print "Burn Finalizing".
+		Wait Until vdot(ndv, NODE:DELTAV) < 0.5.
+		SET thrt to 0.
+		SET done to True.
+	}.
+	Wait 0.
+}.
+REMOVE node.
+Print "Inclination Corrected. Manual Control".
+UNLOCK ALL.
