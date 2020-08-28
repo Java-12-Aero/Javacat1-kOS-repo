@@ -38,6 +38,8 @@ Until SHIP:ORBIT:APOAPSIS >= targetap {
 	SET pitchrate to SHIP:ORBIT:APOAPSIS/targetap.
 	SET tgtd to HEADING(90,90 * (1 - MIN(pitchrate^0.5,1))).
 	set thrt to 1.
+	Print "Pitch is " + (90 * (1 - MIN(pitchrate^0.5,1))).
+	Print "Apoapsis is " + SHIP:ORBIT:APOAPSIS.
 	WAIT 0.
 }.
 SET thrt to 0.
