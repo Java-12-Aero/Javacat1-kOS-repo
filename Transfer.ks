@@ -20,6 +20,9 @@ local v0 is 0. //current orbit velocity
 local v1 is 0. //target orbit velocity
 set thrt to 0. //throttle control
 set tgtd to SHIP:FACING. //steering control
+local engine_flow is 0. //for multiple engine calculation
+local engine_thrust is 0. //for multiple engine calculation
+local avg_isp is 0. //for multiple engine calculation
 LOCK throttle to thrt.
 LOCK steering to tgtd.
 set sma to (TARGET:ORBIT:APOAPSIS + SHIP:ORBIT:PERIAPSIS)/2 + BODY:RADIUS.
@@ -46,17 +49,33 @@ If norm > 0 {
 	Print "Current phase angle is " + cphase.
 	set pt to (tphase-cphase)/deltaphase.
 }.
+if pt < 0 {
+	set pt to mod(tphase-cphase-360,360)/deltaphase.
+}.
 set node_timestamp to pt + TIME:SECONDS.
 Print "Node in " + pt + " seconds".
 set v0 to sqrt(body:mu/orbit:semimajoraxis).
 set v1 to sqrt(body:mu*(2/orbit:semimajoraxis - (1/sma))).
 set dv to v1 - v0.
-Print "Delta V for apoapsis change is " + dv + " m/s".
 set mnv to NODE(node_timestamp,0,0,dv).
 add mnv.
-List ENGINES in eng. //engines list
-SET mf to SHIP:MASS/(Constant:e^(mnv:DELTAV:MAG/(eng[0]:ISP*Constant:g0))).
-SET flow to SHIP:MAXTHRUST/(eng[0]:ISP*Constant:g0).
+Print "Calculating dv for safe AP".
+until nextnode:orbit:nextpatch:periapsis > 10000 {
+    set nextnode:prograde to nextnode:prograde - 0.01.
+    wait 0.
+}.
+Print "Delta V for apoapsis change is " + nextnode:prograde + " m/s".
+Print "Maneuver Planned".
+List ENGINES in englist. //engines list
+For eng in englist {
+	If eng:ignition {
+		Set engine_flow to engine_flow + (eng:availablethrust/(eng:ISP*Constant:g0)).
+		Set engine_thrust to engine_thrust + eng:availablethrust.
+	}.
+}.
+Set avg_isp to engine_thrust/engine_flow.
+SET mf to SHIP:MASS/(Constant:e^(mnv:DELTAV:MAG/(avg_isp*Constant:g0))).
+SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
 SET md to SHIP:MASS-mf.
 SET burnt to md/flow.
 Print "Burn time is " + burnt + "seconds".
@@ -79,4 +98,6 @@ Until done {
 	}.
 	Wait 0.
 }.
+Print "Transfer to target complete, Manual control".
 REMOVE mnv.
+UNLOCK ALL.

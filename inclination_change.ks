@@ -13,6 +13,9 @@ local mf is 0.
 local flow is 0.
 local md is 0.
 local burnt is 0.
+local engine_flow is 0. //for multiple engine calculation
+local engine_thrust is 0. //for multiple engine calculation
+local avg_isp is 0. //for multiple engine calculation
 LOCK Throttle to thrt.
 LOCK Steering to tgtd.
 local AN_true_anomaly is 360-obt:argumentofperiapsis.
@@ -44,13 +47,22 @@ SET node_radialout to dv * vxcl(vs,rs):normalized.
 SET node_normal to dv * vcrs(vs,rs):normalized. 
 SET node to NODE(node_timestamp, node_radialout, node_normal, node_prograde).
 ADD node.
-List ENGINES in eng. //engines list
-SET mf to SHIP:MASS/(Constant:e^(NODE:DELTAV:MAG/(eng[0]:ISP*Constant:g0))).
-SET flow to SHIP:MAXTHRUST/(eng[0]:ISP*Constant:g0).
+List ENGINES in englist. //engines list
+For eng in englist {
+	If eng:ignition {
+		Set engine_flow to engine_flow + (eng:availablethrust/(eng:ISP*Constant:g0)).
+		Set engine_thrust to engine_thrust + eng:availablethrust.
+	}.
+}.
+Set avg_isp to engine_thrust/engine_flow.
+SET mf to SHIP:MASS/(Constant:e^(NODE:DELTAV:MAG/(avg_isp*Constant:g0))).
+SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
 SET md to SHIP:MASS-mf.
 SET burnt to md/flow.
+RCS OFF.
 Print "Burn time is " + burnt + "seconds".
 Wait Until node:eta <=(burnt/2 + 60).
+RCS On.
 Print "60 Seconds to burn".
 SET tgtd to NODE:DELTAV.
 Wait Until vang(tgtd, SHIP:FACING:VECTOR) < 0.25. 
@@ -72,3 +84,4 @@ Until done {
 REMOVE node.
 Print "Inclination Corrected. Manual Control".
 UNLOCK ALL.
+Run once Transfer.ks.

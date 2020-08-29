@@ -1,7 +1,7 @@
 Clearscreen.
-//Set Target orbit Apoapsis Here
-local targetap is 80000.
-// Set Target Orbit Apoapsis Above
+//NOTE: Set Target orbit Apoapsis Here
+local targetap is 90000.
+//NOTE: Set Target Orbit Apoapsis Above
 local tinc is 0. //Set target inclination here
 local pitchrate is 0. //rate for ship to pitch DOWN into orbit
 local tgtd is SHIP:FACING. //flight target direction
@@ -20,9 +20,13 @@ local done is 0. //for loop
 local incd is 0. //inclination change
 local norm is 0. //for plane change
 local ovel is 0. //orbit velocity
+local engine_flow is 0. //for multiple engine calculation
+local engine_thrust is 0. //for multiple engine calculation
+local avg_isp is 0. //for multiple engine calculation
 LOCK STEERING to tgtd.
 Wait 1.
 Print "Launch Starting.".
+RCS ON.
 Stage.
 SET bthrust to SHIP:MAXTHRUST.
 SET thrt to 1.
@@ -53,9 +57,16 @@ SET curr to sqrt(BODY:MU*((2/(BODY:RADIUS+ORBIT:APOAPSIS))-(1/ORBIT:SEMIMAJORAXI
 SET pg to circ-curr.
 SET node to NODE(ETA:APOAPSIS+TIME:SECONDS,0,0,pg).
 ADD node.
-List ENGINES in eng. //engines list
-SET mf to SHIP:MASS/(Constant:e^(pg/(eng[0]:ISP*Constant:g0))).
-SET flow to SHIP:MAXTHRUST/(eng[0]:ISP*Constant:g0).
+List ENGINES in englist. //engines list
+For eng in englist {
+	If eng:ignition {
+		Set engine_flow to engine_flow + (eng:availablethrust/(eng:ISP*Constant:g0)).
+		Set engine_thrust to engine_thrust + eng:availablethrust.
+	}.
+}.
+Set avg_isp to engine_thrust/engine_flow.
+SET mf to SHIP:MASS/(Constant:e^(pg/(avg_isp*Constant:g0))).
+SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
 SET md to SHIP:MASS-mf.
 SET burnt to md/flow.
 Print "Burn time is " + burnt + "seconds".
@@ -82,4 +93,5 @@ REMOVE node.
 CLEARSCREEN.
 Print "Orbit complete, running inclination correction".
 Unlock ALL.
+RCS OFF.
 Run once inclination_change.ks.
