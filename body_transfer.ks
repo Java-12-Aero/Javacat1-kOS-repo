@@ -53,15 +53,17 @@ if pt < 0 {
 	set pt to mod(tphase-cphase-360,360)/deltaphase.
 }.
 set node_timestamp to pt + TIME:SECONDS.
-if node_timestamp < TIME:SECONDS {
-	set node_timestamp to (-1 * pt) + TIME:SECONDS.
-}.
 Print "Node in " + pt + " seconds".
 set v0 to sqrt(body:mu/orbit:semimajoraxis).
 set v1 to sqrt(body:mu*(2/orbit:semimajoraxis - (1/sma))).
 set dv to v1 - v0.
 set mnv to NODE(node_timestamp,0,0,dv).
 add mnv.
+Print "Calculating dv for safe AP".
+until nextnode:orbit:nextpatch:periapsis > 10000 {
+    set nextnode:prograde to nextnode:prograde - 0.01.
+    wait 0.
+}.
 Print "Delta V for apoapsis change is " + nextnode:prograde + " m/s".
 Print "Maneuver Planned".
 List ENGINES in englist. //engines list

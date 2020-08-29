@@ -1,6 +1,6 @@
 Clearscreen.
 //NOTE: Set Target orbit Apoapsis Here
-local targetap is 90000.
+local targetap is 80000.
 //NOTE: Set Target Orbit Apoapsis Above
 local tinc is 0. //Set target inclination here
 local pitchrate is 0. //rate for ship to pitch DOWN into orbit
@@ -94,4 +94,3 @@ CLEARSCREEN.
 Print "Orbit complete, running inclination correction".
 Unlock ALL.
 RCS OFF.
-Run once inclination_change.ks.
