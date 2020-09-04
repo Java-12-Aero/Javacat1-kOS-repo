@@ -1,4 +1,3 @@
-CLEARSCREEN.
 Print "Beginning node execution".
 local done is 0.
 local eng is 0.
@@ -19,11 +18,14 @@ For eng in englist {
 	}.
 }.
 Set avg_isp to engine_thrust/engine_flow.
+print avg_isp.
+print mnv:deltav:mag.
 SET mf to SHIP:MASS/(Constant:e^(mnv:DELTAV:MAG/(avg_isp*Constant:g0))).
 SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
 SET md to SHIP:MASS-mf.
 SET burnt to md/flow.
 Print "Burn time is " + burnt + "seconds".
+Print "Delta V is " + mnv:DELTAV:MAG + "m/s".
 Wait Until mnv:eta <=(burnt/2 + 60).
 Print "60 Seconds to burn".
 SET tgtd to mnv:DELTAV.
@@ -43,4 +45,6 @@ Until done {
 	}.
 	Wait 0.
 }.
+Print "Burn Complete".
+UNLOCK ALL.
 REMOVE mnv.

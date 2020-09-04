@@ -1,6 +1,6 @@
 Clearscreen.
 //NOTE: Set Target orbit Apoapsis Here
-local targetap is 80000.
+parameter targetap is 80000.
 //NOTE: Set Target Orbit Apoapsis Above
 local tinc is 0. //Set target inclination here
 local pitchrate is 0. //rate for ship to pitch DOWN into orbit
@@ -27,7 +27,9 @@ LOCK STEERING to tgtd.
 Wait 1.
 Print "Launch Starting.".
 RCS ON.
+if ship:availablethrust = 0 {
 Stage.
+}.
 SET bthrust to SHIP:MAXTHRUST.
 SET thrt to 1.
 LOCK THROTTLE to thrt.
@@ -48,7 +50,7 @@ Until SHIP:ORBIT:APOAPSIS >= targetap {
 }.
 SET thrt to 0.
 Print "Target Apoapsis Achieved.".
-Until altitude > 70000 {
+Until altitude > body:atm:height {
 	SET tgtd to SHIP:PROGRADE.
 	WAIT 0.
 }.
@@ -91,6 +93,6 @@ Until done {
 }.
 REMOVE node.
 CLEARSCREEN.
-Print "Orbit complete, running inclination correction".
+Print "Orbit complete".
 Unlock ALL.
 RCS OFF.

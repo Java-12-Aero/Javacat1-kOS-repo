@@ -62,3 +62,4 @@ SET node_radialout to dv * vxcl(vs,rs):normalized.
 SET node_normal to dv * vcrs(vs,rs):normalized. 
 SET node to NODE(node_timestamp, node_radialout, node_normal, node_prograde).
 ADD node.
+runpath("execute_maneuver.ks").

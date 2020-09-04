@@ -50,12 +50,9 @@ If norm > 0 {
 	set pt to (tphase-cphase)/deltaphase.
 }.
 if pt < 0 {
-	set pt to mod(tphase-cphase-360,360)/deltaphase.
+	set pt to mod(360+tphase-cphase,360)/deltaphase.
 }.
 set node_timestamp to pt + TIME:SECONDS.
-if node_timestamp < TIME:SECONDS {
-	set node_timestamp to (-1 * pt) + TIME:SECONDS.
-}.
 Print "Node in " + pt + " seconds".
 set v0 to sqrt(body:mu/orbit:semimajoraxis).
 set v1 to sqrt(body:mu*(2/orbit:semimajoraxis - (1/sma))).
