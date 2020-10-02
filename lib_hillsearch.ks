@@ -24,6 +24,7 @@ Function hohmann {
 	local Vf is sqrt(BODY:MU * (2 / ORBIT:SEMIMAJORAXIS - (1 / sma))).
 	local dv is Vi-Vf.
 	local mnv is NODE(node_timestamp, 0, 0, dv).
+	Return lexicon("pd", pd, "timestamp", pd/2).
 }.
 //eccentricity vector calculation
 Function vector_e {
@@ -32,6 +33,7 @@ Function vector_e {
 	local vV is velocityat(subject,timestamp).
 	local rV is positionat(subject,timestamp).
 	local eV is (vcrs(vV,vcrs(rV,vV))/Body:MU) - (rV/rV:Normalized).
+	Return lexicon("vV",vV,"rV",rV,"eV",ev).
 }.
 //True Anomaly Calculation
 Function trueanom {
@@ -41,6 +43,7 @@ Function trueanom {
 	local rV is positionat(subject,timestamp).
 	local vV is velocityat(subject,timestamp).
 	local true_anomaly is arccos(vdot(eV,rV)/(eV:normalized * rV:normalized)).
+	Return lexicon("vV", vV, "rV", rV, "true_anomaly", true_anomaly).
 }.
 //Phase angle calculation
 Function phase_angle {
@@ -53,6 +56,7 @@ Function phase_angle {
 	if norm < 0 and fix = 1 {
 		local phaseang is 360 - phaseang.
 	}.
+	Return lexicon("phaseang", phaseang).
 }.
 //For Lambert: Determining relative positions
 Function rel_ang {
