@@ -1,5 +1,6 @@
 //This is the hillclimber function for the lambert solver
 //defaults to finding within 1 revolution
+//Praise the omnissiah etc etc
 //note:set variables to functions to use lexicons
 @lazyglobal off.
 //Hohmann approximation to start with lambert solver - gives needed info
@@ -25,8 +26,9 @@ Function hohmann {
 	local Vf is sqrt(BODY:MU * (2 / ORBIT:SEMIMAJORAXIS - (1 / sma))).
 	local dv is Vi-Vf.
 	local mnv is NODE(node_timestamp, 0, 0, dv).
-	local timestamp is pd/2.
-	Return lexicon("pd", pd, "timestamp", timestamp).
+	local tof is pd/2.
+	local timestamp is (pd/2)+node_timestamp.
+	Return lexicon("pd", pd, "timestamp", timestamp, "tof", tof, "dv", dv).
 }.
 //eccentricity vector calculation
 Function vector_e {
@@ -58,7 +60,7 @@ Function phase_angle {
 	if norm < 0 and fix = 1 {
 		local phaseang is 360 - phaseang.
 	}.
-	Return lexicon("phaseang", phaseang).
+	Return lexicon("phaseang", phaseang, "norm", norm).
 }.
 //Lambert Hillclimber
 Function lambert {
@@ -66,4 +68,18 @@ Function lambert {
 	Parameter vV.
 	Parameter rV.
 	Parameter phaseang.
+	Parameter timestamp.
+	Parameter norm.
+	local time_up is 0.
+	if not ship:orbit:hasnextpatch {
+		local closest_approach is (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
+		if norm < 0 {
+			if time_up = 0 {
+				local future_sep is (positionat(target,timestamp + 120) - positionat(ship,timestamp + 120)):mag.
+				if future_sep < closest_approach { 
+					timestamp = timestamp + 120.
+					set nextnode:eta to nextnode:eta + 120.
+				} else { time_up = 1 }.
+			} else { 
+				set nextnode:prograde to nextnode:prograde + 10.
 }.
