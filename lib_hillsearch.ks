@@ -51,13 +51,13 @@ Function trueanom {
 }.
 //Phase angle calculation at given time
 Function phase_angle {
-	Parameter fix is 1.
+	Parameter fix is true.
 	Parameter timestamp.
 	local phaseang is vang(positionat(ship,timestamp) - positionat(body,timestamp), positionat(target,timestamp) - positionat(body,timestamp).
 	local vcrs1 is vcrs(positionat(ship,timestamp) - positionat(body,timestamp), positionat(target,timestamp) - positionat(body,timestamp)).
 	local vcrs2 is vcrs(positionat(ship,timestamp) - positionat(body,timestamp), velocityat(ship,timestamp):orbit).
 	local norm is vdot(vcrs1, vcrs2)
-	if norm < 0 and fix = 1 {
+	if norm < 0 and fix {
 		local phaseang is 360 - phaseang.
 	}.
 	Return lexicon("phaseang", phaseang, "norm", norm).
@@ -70,18 +70,18 @@ Function lambert {
 	Parameter phaseang.
 	Parameter timestamp.
 	Parameter norm.
-	local time_up is 0.
+	local time_up is true.
 	if not ship:orbit:hasnextpatch {
 		until ship:orbit:hasnextpatch or nextnode:orbit:hasnextpatch {
 			local closest_approach is (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
 			if norm < 0 {
-				if time_up = 0 {
+				if time_up {
 					local future_sep is (positionat(target,timestamp + 120) - positionat(ship,timestamp + 120)):mag.
 					if future_sep < closest_approach { 
-						timestamp = timestamp + 120.
+						local timestamp is timestamp + 120.
 						set nextnode:eta to nextnode:eta + 120.
 						set closest_approach to (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
-					} else { time_up = 1 }.
+					} else { local time_up is false }.
 				} else { 
 					set nextnode:prograde to nextnode:prograde + 10.
 					local tof is nextnode:orbit:period/2.
@@ -92,13 +92,13 @@ Function lambert {
 					}.
 				}.
 			} else {
-				if time_up = 0 {
+				if time_up {
 					local future_sep is (positionat(target,timestamp - 120) - positionat(ship,timestamp - 120)):mag.
 					if future_sep < closest_approach { 
-						timestamp = timestamp - 120.
+						local timestamp is timestamp - 120.
 						set nextnode:eta to nextnode:eta - 120.
 						set closest_approach to (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
-					} else { time_up = 1 }.
+					} else { local time_up is false }.
 				} else { 
 					set nextnode:prograde to nextnode:prograde - 10.
 					local tof is nextnode:orbit:period/2.
