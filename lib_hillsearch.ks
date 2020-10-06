@@ -85,7 +85,7 @@ Function lambert {
 				} else { 
 					set nextnode:prograde to nextnode:prograde + 10.
 					local tof is nextnode:orbit:period/2.
-					local timestamp is nextnode:timestamp.
+					local timestamp is nextnode:eta + time:seconds + tof.
 					local future_sep is (positionat(target, timestamp) - positionat(ship, timestamp)):mag.
 					if future_sep > closest_approach { 
 					set nextnode:prograde to nextnode:prograde - 10.
@@ -102,7 +102,7 @@ Function lambert {
 				} else { 
 					set nextnode:prograde to nextnode:prograde - 10.
 					local tof is nextnode:orbit:period/2.
-					local timestamp is nextnode:timestamp.
+					local timestamp is nextnode:eta + time:seconds + tof.
 					local future_sep is (positionat(target, timestamp) - positionat(ship, timestamp)):mag.
 					if future_sep > closest_approach { 
 					set nextnode:prograde to nextnode:prograde + 10.
