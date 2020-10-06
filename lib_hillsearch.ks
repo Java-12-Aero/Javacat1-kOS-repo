@@ -1,5 +1,6 @@
 //This is the hillclimber function for the lambert solver
-//defaults to finding within 1 revolution.
+//defaults to finding within 1 revolution
+//note:set variables to functions to use lexicons
 @lazyglobal off.
 //Hohmann approximation to start with lambert solver - gives needed info
 Function hohmann {
@@ -24,7 +25,8 @@ Function hohmann {
 	local Vf is sqrt(BODY:MU * (2 / ORBIT:SEMIMAJORAXIS - (1 / sma))).
 	local dv is Vi-Vf.
 	local mnv is NODE(node_timestamp, 0, 0, dv).
-	Return lexicon("pd", pd, "timestamp", pd/2).
+	local timestamp is pd/2.
+	Return lexicon("pd", pd, "timestamp", timestamp).
 }.
 //eccentricity vector calculation
 Function vector_e {
@@ -33,7 +35,7 @@ Function vector_e {
 	local vV is velocityat(subject,timestamp).
 	local rV is positionat(subject,timestamp).
 	local eV is (vcrs(vV,vcrs(rV,vV))/Body:MU) - (rV/rV:Normalized).
-	Return lexicon("vV",vV,"rV",rV,"eV",ev).
+	Return lexicon("vV",vV,"rV",rV,"eV",eV).
 }.
 //True Anomaly Calculation
 Function trueanom {
@@ -45,7 +47,7 @@ Function trueanom {
 	local true_anomaly is arccos(vdot(eV,rV)/(eV:normalized * rV:normalized)).
 	Return lexicon("vV", vV, "rV", rV, "true_anomaly", true_anomaly).
 }.
-//Phase angle calculation
+//Phase angle calculation at given time
 Function phase_angle {
 	Parameter fix is 1.
 	Parameter timestamp.
@@ -58,11 +60,10 @@ Function phase_angle {
 	}.
 	Return lexicon("phaseang", phaseang).
 }.
-//For Lambert: Determining relative positions
-Function rel_ang {
-	Parameter phaseang.
-}.
 //Lambert Hillclimber
 Function lambert {
 	Parameter tof.
+	Parameter vV.
+	Parameter rV.
+	Parameter phaseang.
 }.
