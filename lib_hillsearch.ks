@@ -71,6 +71,7 @@ Function lambert {
 	Parameter timestamp.
 	Parameter norm.
 	local time_up is true.
+	local nodetime is nextnode:eta + time:seconds.
 	if not ship:orbit:hasnextpatch {
 		until ship:orbit:hasnextpatch or nextnode:orbit:hasnextpatch {
 			local closest_approach is (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
@@ -79,13 +80,13 @@ Function lambert {
 					local future_sep is (positionat(target,timestamp + 120) - positionat(ship,timestamp + 120)):mag.
 					if future_sep < closest_approach { 
 						local timestamp is timestamp + 120.
-						set nextnode:eta to nextnode:eta + 120.
+						set nodetime to nodetime + 120.
 						set closest_approach to (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
 					} else { local time_up is false }.
 				} else { 
 					set nextnode:prograde to nextnode:prograde + 10.
 					local tof is nextnode:orbit:period/2.
-					local timestamp is nextnode:eta + time:seconds + tof.
+					local timestamp is nodetime + tof.
 					local future_sep is (positionat(target, timestamp) - positionat(ship, timestamp)):mag.
 					if future_sep > closest_approach { 
 					set nextnode:prograde to nextnode:prograde - 10.
@@ -96,13 +97,13 @@ Function lambert {
 					local future_sep is (positionat(target,timestamp - 120) - positionat(ship,timestamp - 120)):mag.
 					if future_sep < closest_approach { 
 						local timestamp is timestamp - 120.
-						set nextnode:eta to nextnode:eta - 120.
+						set nodetime to nodetime - 120.
 						set closest_approach to (positionat(target,timestamp) - positionat(ship,timestamp)):mag.
 					} else { local time_up is false }.
 				} else { 
 					set nextnode:prograde to nextnode:prograde - 10.
 					local tof is nextnode:orbit:period/2.
-					local timestamp is nextnode:eta + time:seconds + tof.
+					local timestamp is nodetime + tof.
 					local future_sep is (positionat(target, timestamp) - positionat(ship, timestamp)):mag.
 					if future_sep > closest_approach { 
 					set nextnode:prograde to nextnode:prograde + 10.
