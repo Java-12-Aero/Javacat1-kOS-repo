@@ -111,5 +111,6 @@ Function lambert {
 				}.
 			}.
 		}.
+		set nextnode:eta to nodetime - time:seconds.
 	}.
 }.	
