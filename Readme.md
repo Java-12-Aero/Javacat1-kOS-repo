@@ -8,7 +8,7 @@ The Scripts are written in the Kerboscript language, which is described on [the 
 
 ## Licensing:
 
-Code here is attributed under the MIT license.
+Code here is attributed under the MIT license, the text of which can be found in [License.md](https://github.com/Javacat1/Javacat1-kOS-repo/blob/master/License.md)
 
 The shorthand of the MIT license is:
 1. Don't plagarize (give attribution to the source)
