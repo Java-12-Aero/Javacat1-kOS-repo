@@ -6,6 +6,8 @@ This repository does not include the boot files that have been used with some of
 
 The Scripts are written in the Kerboscript language, which is described on [the documentation page](https://ksp-kos.github.io/KOS/)
 
+You can view a demonstration of some of the scripts [here](https://www.youtube.com/watch?v=q3TtLLXIeYY)
+
 ## Licensing:
 
 Code here is attributed under the MIT license, the text of which can be found in [License.md](https://github.com/Javacat1/Javacat1-kOS-repo/blob/master/License.md)
