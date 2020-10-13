@@ -22,14 +22,13 @@ set mnv to NODE(time:seconds+60,0,0,escape_dv).
 add mnv.
 set periapsis_test to nextnode:orbit:nextpatch:periapsis.
 print "calculating best escape time".
-print nextnode:eta.
-until nextnode:orbit:nextpatch:periapsis > periapsis_test and nextnode:orbit:nextpatch:periapsis < 10000000 {
+until nextnode:orbit:nextpatch:periapsis > periapsis_test and nextnode:orbit:nextpatch:apoapsis > 0 and nextnode:orbit:body:body = ship:orbit:body:body {
 	set periapsis_test to nextnode:orbit:nextpatch:periapsis.
 	set nextnode:ETA to nextnode:eta + 1.
 	wait 0.
 }.
 Print "calculating optimal DV for target periapsis".
-until nextnode:orbit:nextpatch:periapsis >= target_pe {
+until nextnode:orbit:nextpatch:periapsis >= target_pe and nextnode:orbit:body:body = ship:orbit:body:body {
 	set nextnode:prograde to nextnode:prograde - 0.01.
 	wait 0.
 }.

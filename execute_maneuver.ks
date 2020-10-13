@@ -1,6 +1,5 @@
 Print "Beginning node execution".
 local done is 0.
-local eng is 0.
 local ndv is 0.
 local thrt is 0.
 local tgtd is SHIP:FACING.
@@ -24,11 +23,11 @@ SET mf to SHIP:MASS/(Constant:e^(mnv:DELTAV:MAG/(avg_isp*Constant:g0))).
 SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
 SET md to SHIP:MASS-mf.
 SET burnt to md/flow.
-Print "Burn time is " + burnt + "seconds".
-Print "Delta V is " + mnv:DELTAV:MAG + "m/s".
+Print "Burn time is " + burnt + " seconds".
+Print "Delta V is " + mnv:DELTAV:MAG + " m/s".
+SET tgtd to mnv:DELTAV.
 Wait Until mnv:eta <=(burnt/2 + 60).
 Print "60 Seconds to burn".
-SET tgtd to mnv:DELTAV.
 Wait Until vang(tgtd, SHIP:FACING:VECTOR) < 0.25. 
 Print "aligned to node".
 Wait Until mnv:ETA <= (burnt/2).

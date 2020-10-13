@@ -14,8 +14,11 @@ set tretro to target:velocity:orbit - ship:velocity:orbit.
 set tprograde to ship:velocity:orbit - target:velocity:orbit.
 print "Current separation is " + round(tpos:mag) + " meters".
 function approach_search { 
-	set lowerbound to time:seconds + 10.
-	set upperbound to time:seconds + orbit:period/2.
+	set intercept_separation to (target:position - ship:position):mag.
+	parameter lower_time is 10.
+	parameter upper_time is 2.
+	set lowerbound to time:seconds + lower_time.
+	set upperbound to time:seconds + orbit:period/upper_time.
 	set time_difference to upperbound - lowerbound.
 	set time_midpoint to time_difference/2 + lowerbound.
 	until time_difference <= 1 {
@@ -31,6 +34,7 @@ function approach_search {
 			set upperbound to time_midpoint.
 		}.
 	}.
+	return intercept_separation.
 }.
 approach_search().
 print "search complete".

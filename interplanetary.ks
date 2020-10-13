@@ -27,7 +27,7 @@ LOCK throttle to thrt.
 LOCK steering to tgtd.
 set sma to (TARGET:ORBIT:APOAPSIS + SHIP:ORBIT:PERIAPSIS)/2 + BODY:RADIUS.
 set pd to 2 * Constant:PI * sqrt(((sma^3)/BODY:MU)). //NOTE: Remember to divide by 2!!!!!!
-set tgtda to   (360/TARGET:ORBIT:PERIOD) * (pd/2).
+set tgtda to (360/TARGET:ORBIT:PERIOD) * (pd/2).
 set deltaphase to (360/TARGET:ORBIT:PERIOD) - (360/SHIP:ORBIT:PERIOD). //Change in phase angle per second
 set tphase to 180 - tgtda.
 if tphase < 0 { set tphase to 360 + tphase.}.
@@ -39,6 +39,7 @@ Print "Semimajor Axis of transfer is " + sma.
 Print "Transfer orbital period is " + pd.
 Print "Target movement during transfer is " + tgtda + " degrees".
 Print "Desired phase angle is " + tphase.
+print cphase.
 Print "Phase angle change is " + deltaphase + " degrees per second".
 If norm > 0 {
 	Print "Target is in front of vessel".
@@ -61,11 +62,57 @@ set dv to v1 - v0.
 set mnv to NODE(node_timestamp,0,0,dv).
 add mnv.
 Print "Calculating dv for safe AP".
-until nextnode:orbit:nextpatch:periapsis > 10000 {
+if not nextnode:orbit:hasnextpatch {
+	approach_search(node_timestamp, node_timestamp + (nextnode:obt:period/2)).
+	set direction_test to intercept_separation.
+	set node_timestamp to node_timestamp - 10.
+	until nextnode:orbit:hasnextpatch {
+		approach_search(node_timestamp, node_timestamp + (nextnode:obt:period/2)).
+		if intercept_separation < direction_test {
+			set node_timestamp to node_timestamp - 10.
+		} else { 
+		set node_timestamp to node_timestamp + 10.
+		}.
+	}.
+}.
+until nextnode:orbit:nextpatch:periapsis > 10000 + target:atm:height {
     set nextnode:prograde to nextnode:prograde - 0.01.
     wait 0.
 }.
 Print "Delta V for apoapsis change is " + nextnode:prograde + " m/s".
 Print "Maneuver Planned".
-runoncepath("execute_maneuver.ks").
+List ENGINES in englist. //engines list
+For eng in englist {
+	If eng:ignition {
+		Set engine_flow to engine_flow + (eng:availablethrust/(eng:ISP*Constant:g0)).
+		Set engine_thrust to engine_thrust + eng:availablethrust.
+	}.
+}.
+Set avg_isp to engine_thrust/engine_flow.
+SET mf to SHIP:MASS/(Constant:e^(mnv:DELTAV:MAG/(avg_isp*Constant:g0))).
+SET flow to SHIP:MAXTHRUST/(avg_isp*Constant:g0).
+SET md to SHIP:MASS-mf.
+SET burnt to md/flow.
+Print "Burn time is " + burnt + "seconds".
+Wait Until mnv:eta <=(burnt/2 + 60).
+Print "60 Seconds to burn".
+SET tgtd to mnv:DELTAV.
+Wait Until vang(tgtd, SHIP:FACING:VECTOR) < 0.25. 
+Print "aligned to node".
+Wait Until mnv:ETA <= (burnt/2).
+Print "Burning".
+SET ndv to mnv:DELTAV.
+Until done {
+	SET thrt to min(mnv:DELTAV:MAG/(SHIP:MAXTHRUST/SHIP:MASS), 1).
+	SET tgtd to mnv:DELTAV.
+	If mnv:DELTAV:MAG < 0.1 {
+		Print "Burn Finalizing".
+		Wait Until vdot(ndv, mnv:DELTAV) < 0.5.
+		SET thrt to 0.
+		SET done to True.
+	}.
+	Wait 0.
+}.
 Print "Transfer to target complete, Manual control".
+REMOVE mnv.
+UNLOCK ALL.

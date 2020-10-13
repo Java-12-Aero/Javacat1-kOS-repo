@@ -6,9 +6,9 @@ set rcsdock:starboard to 0.
 set rcsdock:top to 0.
 List dockingports in ports.
 set ctrlport to ports[0].
-Print "beginning docking procedure".
+Print "Beginning docking procedure".
 lock steering to target_port.
-Print "Aligning Starboard".
+Print "Aligning".
 until done {
 	set target_port to lookdirup(-target:portfacing:vector, target:portfacing:topvector).
 	set relative_velocity to (ship:velocity:orbit - target:ship:velocity:orbit).
