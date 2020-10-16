@@ -1,6 +1,6 @@
 # Javastuff
 
-A code dump/Library made by Javacat1 for scripts for the Kerbal Operating System (kOS) mod for Kerbal Space Program. These scripts are intended only for use with the kOS mod.
+A code dump/Library made by Javacat1 for scripts for the [Kerbal Operating System (kOS)](https://spacedock.info/mod/60/kOS:%20Scriptable%20Autopilot%20System) mod for Kerbal Space Program. These scripts are intended only for use with the kOS mod.
 
 This repository does not include the boot files that have been used with some of the scripts, so do not expect everything to work immediately upon installation. Files may also be out of date due to forgetfulness or laziness.
 
