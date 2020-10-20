@@ -14,10 +14,44 @@ Code here is attributed under the MIT license, the text of which can be found in
 
 The shorthand of the MIT license is:
 1. Don't plagarize (give attribution to the source)
-2. Don't sue (No liability is promised)
+1. Don't sue (No liability is promised)
 
 For attribution, attribute scripts to **Javacat1** unless they state otherwise.
 
 ## Readiness Level:
 
-The code contained within this repo is graded using the [NASA TRL](https://www.nasa.gov/directorates/heo/scan/engineering/technology/txt_accordion1.html) system, with 9 representing code that is actively deployed and 2 representing new, incomplete, untested code.
+The code contained within this repo is graded using the [NASA TRL](https://www.nasa.gov/directorates/heo/scan/engineering/technology/txt_accordion1.html) system, with 9 representing code that is actively deployed with little to no deviation from expected function, and 2 representing new, incomplete, untested code.
+
+### TRL 9:
+
+Deorbit.ks
+body_transfer.ks
+execute_maneuver.ks
+inclination_change.ks
+inclination_match.ks
+mun_escape.ks
+mun_impact.ks
+mun_landing.ks
+mun_orbit.ks
+orbit.ks
+set_inlcination.ks
+
+### TRL 8:
+
+**Code here needs refining but is functional within acceptable bounds of error**
+
+Transfer.ks
+rendezvous_2.ks
+
+### TRL 7:
+
+**This code is functional**
+
+Dock.ks
+
+### TRL 3:
+
+**Untested**
+
+Java_lib.ks
+lib_hillsearch.ks
