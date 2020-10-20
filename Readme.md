@@ -14,6 +14,10 @@ Code here is attributed under the MIT license, the text of which can be found in
 
 The shorthand of the MIT license is:
 1. Don't plagarize (give attribution to the source)
-1. Don't sue (No liability is promised)
+2. Don't sue (No liability is promised)
 
 For attribution, attribute scripts to **Javacat1** unless they state otherwise.
+
+## Readiness Level:
+
+The code contained within this repo is graded using the [NASA TRL](https://www.nasa.gov/directorates/heo/scan/engineering/technology/txt_accordion1.html) system, with 9 representing code that is actively deployed and 2 representing new, incomplete, untested code.
